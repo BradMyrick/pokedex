@@ -214,14 +214,15 @@ func commandCatch(pokemonName string) error {
 		catchChance = 1
 	}
 
-	if rand.Intn(100) < catchChance {
-		pokedex.caughtPokemon[pokemonName] = pokemonData
-		fmt.Printf("%s was caught!\n", pokemonName)
-	} else {
-		fmt.Printf("%s escaped!\n", pokemonName)
-	}
+    if rand.Intn(100) < catchChance {
+        pokedex.caughtPokemon[pokemonName] = pokemonData
+        fmt.Printf("%s was caught!\n", pokemonName)
+        fmt.Println("You may now inspect it with the inspect command.")
+    } else {
+        fmt.Printf("%s escaped!\n", pokemonName)
+    }
 
-	return nil
+    return nil
 }
 
 func getCommands() map[string]cliCommand {
@@ -284,6 +285,13 @@ func getCommands() map[string]cliCommand {
 				return commandInspect(args[1])
 			},
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Show a list of caught Pokemon",
+			callback: func(args []string) error {
+				return commandPokedex()
+			},
+		},
 	}
 }
 
@@ -340,5 +348,18 @@ func commandInspect(pokemonName string) error {
 		fmt.Printf("  - %s\n", typ.Type.Name)
 	}
 
+	return nil
+}
+
+func commandPokedex() error {
+	fmt.Println("Your Pokedex:")
+	if len(pokedex.caughtPokemon) == 0 {
+		fmt.Println("  You haven't caught any Pokemon yet.")
+		return nil
+	}
+
+	for _, pokemon := range pokedex.caughtPokemon {
+		fmt.Printf("  - %s\n", pokemon.Name)
+	}
 	return nil
 }
